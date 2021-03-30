@@ -6,7 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 //read from .env file or use the ENV variable for production
 const pool = new Pool({
   user: process.env.POSTGRES_USER,
-  host: '192.168.1.222',
+  host: process.env.POSTGRES_HOST,
   database: 'g2',
   password: process.env.POSTGRES_PASS,
   port: 5432,
