@@ -1,10 +1,14 @@
 const Pool = require('pg').Pool
-//edit this one for your server
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+  }
+
+//read from .env file or use the ENV variable for production
 const pool = new Pool({
-  user: 'senzing',
+  user: process.env.POSTGRES_USER,
   host: '192.168.1.222',
   database: 'g2',
-  password: 'yourpass',
+  password: process.env.POSTGRES_PASS,
   port: 5432,
 });
 
