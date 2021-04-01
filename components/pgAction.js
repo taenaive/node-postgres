@@ -7,9 +7,9 @@ if (process.env.NODE_ENV !== 'production') {
 const pool = new Pool({
   user: process.env.POSTGRES_USER,
   host: process.env.POSTGRES_HOST,
-  database: 'g2',
+  database: process.env.POSTGRES_DATABSE_NAME,
   password: process.env.POSTGRES_PASS,
-  port: 5432,
+  port: process.env.POSTGRES_PORT,
 });
 
 const listDsrcRecord = (queryStr) => {
