@@ -18,7 +18,7 @@ const listDsrcRecord = (queryStr) => {
         if (error) {
           reject(error)
         }
-        resolve(results.rows);
+        resolve( (results && results.rows) ? results.rows : results);
       })
     }) 
   }
