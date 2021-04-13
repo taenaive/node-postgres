@@ -11,8 +11,29 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers');
   next();
 });
-const selectEverything = 'SELECT * FROM public.dsrc_record ORDER BY dsrc_id ASC, record_id ASC'
+//const selectEverything = 'SELECT * FROM public.dsrc_record ORDER BY dsrc_id ASC, record_id ASC'
 const returnCount = 'SELECT count(*) FROM public.dsrc_record'
+
+const selectEverything  =`SELECT * FROM public.dsrc_record`
+//const selectWhere = `WHERE LOWER(json_data::json ->> 'NAME_FIRST') = LOWER('Honda') AND `
+const selectOrderBy = `ORDER BY dsrc_id ASC, record_id ASC`
+
+function createWhere(query) {
+  let whereClause =''
+  try{
+  if(query.where){
+    const whereObj = JSON.parse(query.where)
+   //console.log ('where=', query.where)
+    whereClause = Object.keys(whereObj).map(key => {
+      return `WHERE LOWER(json_data::json ->> '${key}') = LOWER('${whereObj[key]}')`
+    }).join(' AND '); 
+   }
+  }catch (e){
+    console.log("Json text parse error")
+  }finally{
+    return whereClause
+  }
+}
 
 app.get('/', (req, res) => {
   pgAction.listDsrcRecord(returnCount)
@@ -24,10 +45,12 @@ app.get('/', (req, res) => {
   })
 })
 
-app.get('/all', (req, res) => {
+app.get('/all', (req, res) => { 
     let offset = req.query.offset ? req.query.offset : 0;
     let limit = req.query.limit ? req.query.limit : 100;
-    const selectWithLimit = `${selectEverything} LIMIT ${limit} OFFSET ${offset}`
+    //console.log(createWhere(req.query))
+    
+    const selectWithLimit = `${selectEverything} ${createWhere(req.query)} ${selectOrderBy} LIMIT ${limit} OFFSET ${offset}`
     pgAction.listDsrcRecord(selectWithLimit)
     .then(response => {
       res.status(200).send(response);
