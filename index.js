@@ -22,16 +22,23 @@ function createWhere(query) {
   let whereClause =''
   try{
   if(query.where){
+   
     const whereObj = JSON.parse(query.where)
-   //console.log ('where=', query.where)
-    whereClause = Object.keys(whereObj).map(key => {
-      return `WHERE LOWER(json_data::json ->> '${key}') = LOWER('${whereObj[key]}')`
-    }).join(' AND '); 
+    whereClause = whereObj.map( clause => {
+     const orJoins = Object.keys(clause).map(key => {
+        return `LOWER(json_data::json ->> '${key}') like LOWER('${clause[key]}%')`
+      }).join(' OR '); 
+      return `(${orJoins})`
+    }).join('AND')
+    //console.log ('where=', whereClause)
+    // whereClause = Object.keys(whereObj).map(key => {
+    //   return `LOWER(json_data::json ->> '${key}') = LOWER('${whereObj[key]}')`
+    // }).join(' AND '); 
    }
   }catch (e){
     console.log("Json text parse error")
   }finally{
-    return whereClause
+    return whereClause ? `WHERE ${whereClause}` : whereClause
   }
 }
 
