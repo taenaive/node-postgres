@@ -55,9 +55,10 @@ app.get('/', (req, res) => {
 app.get('/all', (req, res) => { 
     let offset = req.query.offset ? req.query.offset : 0;
     let limit = req.query.limit ? req.query.limit : 100;
+    let orderBy = req.query.orderby ? selectOrderBy : '';
     //console.log(createWhere(req.query))
     
-    const selectWithLimit = `${selectEverything} ${createWhere(req.query)} ${selectOrderBy} LIMIT ${limit} OFFSET ${offset}`
+    const selectWithLimit = `${selectEverything} ${createWhere(req.query)} ${orderBy} LIMIT ${limit} OFFSET ${offset}`
     pgAction.listDsrcRecord(selectWithLimit)
     .then(response => {
       res.status(200).send(response);
